@@ -12,15 +12,64 @@ public class Player {
         }
     }
 
-    public Cell getCage(int i, int j){
-        return cells[i][j];
+    public Cell getCell(int i, int j){
+        if (i > 0 && i < Game.TABLE_SIZE && j > 0 && j < Game.TABLE_SIZE)
+            return cells[i][j];
+        else
+            return null;
     }
 
-    public void setCageType(int i, int j, TypeOfCell type){
-        cells[i][j].setType(type);
+    public void setCellType(int i, int j, TypeOfCell type){
+        getCell(i, j).setType(type);
     }
 
-    public void setCageHit(int i, int j){
-        cells[i][j].setHit(true);
+    public void setCellHit(int i, int j){
+        getCell(i, j).setHit(true);
+    }
+
+    private boolean isCellEmpty(int i, int j){
+        return getCell(i, j).getType() == TypeOfCell.EMPTY_CELL;
+    }
+
+    private boolean hasCellNoNeighbours(int i, int j){
+        for (int r = i-1; r <= i+1; r++){
+            for (int c = j-1; c <= j+1; c++){
+                if (r != i || c != j){
+                    if (!isCellEmpty(r, c))
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void createMine(int i, int j){
+        if (isCellEmpty(i, j) && hasCellNoNeighbours(i, j))
+            setCellType(i, j, TypeOfCell.MINE);
+    }
+
+    public void createMinesweeper(int i, int j) {
+        if (isCellEmpty(i, j) && hasCellNoNeighbours(i, j))
+            setCellType(i, j, TypeOfCell.MINESWEEPER);
+    }
+
+    public void createSubmarine(int i, int j) {
+        if (isCellEmpty(i, j))
+            setCellType(i, j, TypeOfCell.SUBMARINE);
+    }
+
+    public void createShip(int i, int j, Ship ship){
+        int start = (ship.getOrientation() == Orientation.HORIZONTAL)?j:i;
+        for (int ind = start; ind < start + ship.getDeckCount(); ind++){
+            int row = (ship.getOrientation() == Orientation.HORIZONTAL)?i:ind;
+            int col = (ship.getOrientation() == Orientation.HORIZONTAL)?ind:j;
+            if (!isCellEmpty(row, col) || !hasCellNoNeighbours(row, col))
+                return;
+        }
+        for (int ind = start; ind < start + ship.getDeckCount(); ind++){
+            int row = (ship.getOrientation() == Orientation.HORIZONTAL)?i:ind;
+            int col = (ship.getOrientation() == Orientation.HORIZONTAL)?ind:j;
+            cells[row][col] = new ShipCell(ship);
+        }
     }
 }
