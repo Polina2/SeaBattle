@@ -19,6 +19,14 @@ public class Player {
             return null;
     }
 
+    public int getAliveShipsCount() {
+        return aliveShipsCount;
+    }
+
+    public void decreaseAliveShipsCount(){
+        aliveShipsCount--;
+    }
+
     public void setCellType(int i, int j, TypeOfCell type){
         getCell(i, j).setType(type);
     }
@@ -69,7 +77,7 @@ public class Player {
         for (int ind = start; ind < start + ship.getDeckCount(); ind++){
             int row = (ship.getOrientation() == Orientation.HORIZONTAL)?i:ind;
             int col = (ship.getOrientation() == Orientation.HORIZONTAL)?ind:j;
-            cells[row][col] = new ShipCell(ship);
+            cells[row][col] = new Cell(ship);
         }
     }
 }
