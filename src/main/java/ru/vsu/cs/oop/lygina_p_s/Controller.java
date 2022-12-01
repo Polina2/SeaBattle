@@ -9,7 +9,7 @@ public class Controller {
         Stage stage = drawer.getStage();
         game.setGameState(state);
         drawer.setDrawingState(TypeOfCell.EMPTY_CELL);
-        stage.setScene(drawer.getScene(game, stage));
+        stage.setScene(drawer.getScene(game));
     }
 
     public static void createComponent(Player player, TypeOfCell type, int i, int j){
