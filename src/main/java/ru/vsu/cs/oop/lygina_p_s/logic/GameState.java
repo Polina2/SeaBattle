@@ -1,4 +1,4 @@
-package ru.vsu.cs.oop.lygina_p_s;
+package ru.vsu.cs.oop.lygina_p_s.logic;
 
 public enum GameState {
     CREATING_FIELD_1,

@@ -1,4 +1,4 @@
-package ru.vsu.cs.oop.lygina_p_s;
+package ru.vsu.cs.oop.lygina_p_s.logic;
 
 public class Game {
     public static final int TABLE_SIZE = 10;
@@ -56,5 +56,17 @@ public class Game {
 
     public GameState getGameState() {
         return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
     }
 }

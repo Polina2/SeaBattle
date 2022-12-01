@@ -1,4 +1,4 @@
-package ru.vsu.cs.oop.lygina_p_s;
+package ru.vsu.cs.oop.lygina_p_s.logic;
 
 public class Cell {
     private boolean isHit = false;
