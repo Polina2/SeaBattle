@@ -4,4 +4,5 @@ module SeaBattle {
     requires javafx.fxml;
 
     opens ru.vsu.cs.oop.lygina_p_s;
+    opens ru.vsu.cs.oop.lygina_p_s.logic;
 }

@@ -1,4 +1,4 @@
-package ru.vsu.cs.oop.lygina_p_s;
+package ru.vsu.cs.oop.lygina_p_s.logic;
 
 public class Player {
     private Cell[][] cells = new Cell[Game.TABLE_SIZE][Game.TABLE_SIZE];
