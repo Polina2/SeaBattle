@@ -6,6 +6,7 @@ public class Game {
     private GameState gameState;
     private Player player1;
     private Player player2;
+    private Controller controller;
 
     public Game(){
 
@@ -14,6 +15,7 @@ public class Game {
     public void run(){
         player1 = new Player();
         player2 = new Player();
+        controller = new Controller();
         gameState = GameState.CREATING_FIELD_1;
         //update view
     }
@@ -36,7 +38,7 @@ public class Game {
         if (cell.getType() == TypeOfCell.SHIP){
             cell.getShip().decreaseAliveDeckCount();
             if (!cell.getShip().isAlive())
-                victim.decreaseAliveShipsCount();
+                controller.decreaseAliveShipsCount(victim);
             if (victim.getAliveShipsCount() == 0)
                 gameState = GameState.END;
         } else {

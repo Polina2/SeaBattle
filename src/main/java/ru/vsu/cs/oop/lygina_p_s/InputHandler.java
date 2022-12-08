@@ -2,27 +2,26 @@ package ru.vsu.cs.oop.lygina_p_s;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import ru.vsu.cs.oop.lygina_p_s.logic.Game;
-import ru.vsu.cs.oop.lygina_p_s.logic.Orientation;
-import ru.vsu.cs.oop.lygina_p_s.logic.TypeOfCell;
+import ru.vsu.cs.oop.lygina_p_s.logic.*;
 
 import static ru.vsu.cs.oop.lygina_p_s.logic.GameState.*;
 
 public class InputHandler {
-    private Controller controller = new Controller();
+    private final Controller controller = new Controller();
 
     public void setButtonChangeDrawingState(Button button, TypeOfCell type, Drawer drawer){
         button.setOnAction(e -> {
-            drawer.setDrawingState(type);
+            controller.setDrawingState(type);
         });
     }
 
     public void setButtonChangeDrawingState(Button button, TypeOfCell type, Drawer drawer, int deckCount){
         button.setOnAction(e -> {
-            drawer.setDrawingState(type);
-            drawer.setDeckCount(deckCount);
+            controller.setDrawingState(type);
+            controller.setDeckCount(deckCount);
         });
     }
 
@@ -37,6 +36,12 @@ public class InputHandler {
         });
     }
 
+    public void setRadioButtonChangeOrientation(RadioButton radioButton, Orientation orientation){
+        radioButton.setOnAction(e -> {
+            controller.setOrientation(orientation);
+        });
+    }
+
     public void setCellAction(Game game, Drawer drawer){
         if (game.getGameState() == CREATING_FIELD_1 || game.getGameState() == CREATING_FIELD_2) {
             FieldView fieldView = (game.getGameState() == CREATING_FIELD_1)?drawer.getField1(): drawer.getField2();
@@ -46,16 +51,16 @@ public class InputHandler {
                     int finalI = i;
                     int finalJ = j;
                     node.setOnMouseClicked(e -> {
-                        if(controller.createComponent(fieldView.getPlayer(), drawer, finalI, finalJ)) {
-                            if (drawer.getDrawingState() == TypeOfCell.SHIP){
-                                int start = (drawer.getOrientation() == Orientation.VERTICAL)?finalJ:finalI;
-                                for (int ind = start; ind < start + drawer.getDeckCount(); ind++){
-                                    int row = (drawer.getOrientation() == Orientation.VERTICAL)?finalI:ind;
-                                    int col = (drawer.getOrientation() == Orientation.VERTICAL)?ind:finalJ;
-                                    drawer.drawComponent((StackPane) getNodeFromGridPane(fieldView, row, col));
+                        if(controller.createComponent(fieldView.getPlayer(), finalI, finalJ)) {
+                            if (controller.getDrawingState() == TypeOfCell.SHIP){
+                                int start = (controller.getOrientation() == Orientation.VERTICAL)?finalJ:finalI;
+                                for (int ind = start; ind < start + controller.getDeckCount(); ind++){
+                                    int row = (controller.getOrientation() == Orientation.VERTICAL)?finalI:ind;
+                                    int col = (controller.getOrientation() == Orientation.VERTICAL)?ind:finalJ;
+                                    drawer.drawComponent((StackPane) getNodeFromGridPane(fieldView, row, col), controller.getDrawingState());
                                 }
                             } else
-                                drawer.drawComponent((StackPane) node);
+                                drawer.drawComponent((StackPane) node, controller.getDrawingState());
                         }
                     });
                 }

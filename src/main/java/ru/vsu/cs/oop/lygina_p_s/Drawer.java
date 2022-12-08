@@ -25,7 +25,7 @@ public class Drawer {
     private FieldView fieldView1;
     private FieldView fieldView2;
     private final Stage stage;
-    private InputHandler inputHandler = new InputHandler();
+    private final InputHandler inputHandler = new InputHandler();
 
     public Drawer(Stage stage) {
         this.stage = stage;
@@ -41,30 +41,6 @@ public class Drawer {
 
     public FieldView getField2() {
         return fieldView2;
-    }
-
-    private TypeOfCell drawingState = TypeOfCell.EMPTY_CELL;
-    private int deckCount = 1;
-    private Orientation orientation = Orientation.HORIZONTAL;
-
-    public void setDrawingState(TypeOfCell drawingState) {
-        this.drawingState = drawingState;
-    }
-
-    public TypeOfCell getDrawingState() {
-        return drawingState;
-    }
-
-    public int getDeckCount() {
-        return deckCount;
-    }
-
-    public Orientation getOrientation() {
-        return orientation;
-    }
-
-    public void setDeckCount(int deckCount) {
-        this.deckCount = deckCount;
     }
 
     public Scene getScene(Game game) {
@@ -87,12 +63,9 @@ public class Drawer {
             radioButtonH.setToggleGroup(toggleGroup);
             radioButtonV.setToggleGroup(toggleGroup);
             radioButtonH.setSelected(true);
-            radioButtonH.setOnAction(e -> {
-                orientation = Orientation.HORIZONTAL;
-            });
-            radioButtonV.setOnAction(e -> {
-                orientation = Orientation.VERTICAL;
-            });
+
+            inputHandler.setRadioButtonChangeOrientation(radioButtonH, Orientation.HORIZONTAL);
+            inputHandler.setRadioButtonChangeOrientation(radioButtonV, Orientation.VERTICAL);
 
             Button buttonCreateShip1 = new Button("1 deck ship");
             Button buttonCreateShip2 = new Button("2 deck ship");
@@ -125,7 +98,7 @@ public class Drawer {
         return null;
     }
 
-    public void drawComponent(StackPane pane){
+    public void drawComponent(StackPane pane, TypeOfCell drawingState){
         Rectangle rectangle = (Rectangle) pane.getChildren().get(0);
         double halfSquare = rectangle.getWidth() / 2 - 1;
         if (drawingState == TypeOfCell.MINE){
