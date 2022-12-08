@@ -4,10 +4,10 @@ import javafx.scene.layout.GridPane;
 import ru.vsu.cs.oop.lygina_p_s.logic.Game;
 import ru.vsu.cs.oop.lygina_p_s.logic.Player;
 
-public class Field extends GridPane {
+public class FieldView extends GridPane {
     private final Player player;
 
-    public Field(Player player){
+    public FieldView(Player player){
         this.player = player;
         for (int i = 0; i < Game.TABLE_SIZE; i++){
             for (int j = 0; j < Game.TABLE_SIZE; j++){

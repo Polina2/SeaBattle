@@ -3,6 +3,8 @@ package ru.vsu.cs.oop.lygina_p_s;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -20,9 +22,10 @@ import ru.vsu.cs.oop.lygina_p_s.logic.TypeOfCell;
 import static ru.vsu.cs.oop.lygina_p_s.logic.GameState.*;
 
 public class Drawer {
-    private Field field1;
-    private Field field2;
+    private FieldView fieldView1;
+    private FieldView fieldView2;
     private final Stage stage;
+    private InputHandler inputHandler = new InputHandler();
 
     public Drawer(Stage stage) {
         this.stage = stage;
@@ -32,18 +35,18 @@ public class Drawer {
         return stage;
     }
 
-    public Field getField1() {
-        return field1;
+    public FieldView getField1() {
+        return fieldView1;
     }
 
-    public Field getField2() {
-        return field2;
+    public FieldView getField2() {
+        return fieldView2;
     }
 
     private TypeOfCell drawingState = TypeOfCell.EMPTY_CELL;
-//    private int deckCount = 1;
-//    private Orientation orientation = Orientation.HORIZONTAL;
-//
+    private int deckCount = 1;
+    private Orientation orientation = Orientation.HORIZONTAL;
+
     public void setDrawingState(TypeOfCell drawingState) {
         this.drawingState = drawingState;
     }
@@ -51,14 +54,18 @@ public class Drawer {
     public TypeOfCell getDrawingState() {
         return drawingState;
     }
-//
-//    public int getDeckCount() {
-//        return deckCount;
-//    }
-//
-//    public Orientation getOrientation() {
-//        return orientation;
-//    }
+
+    public int getDeckCount() {
+        return deckCount;
+    }
+
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    public void setDeckCount(int deckCount) {
+        this.deckCount = deckCount;
+    }
 
     public Scene getScene(Game game) {
         GameState state = game.getGameState();
@@ -66,13 +73,27 @@ public class Drawer {
             Group group = new Group();
             HBox hBoxRoot = new HBox();
             if (state == CREATING_FIELD_1) {
-                field1 = new Field(game.getPlayer1());
-                hBoxRoot.getChildren().add(field1);
+                fieldView1 = new FieldView(game.getPlayer1());
+                hBoxRoot.getChildren().add(fieldView1);
             } else {
-                field2 = new Field(game.getPlayer2());
-                hBoxRoot.getChildren().add(field2);
+                fieldView2 = new FieldView(game.getPlayer2());
+                hBoxRoot.getChildren().add(fieldView2);
             }
             VBox vBoxButtons = new VBox();
+
+            ToggleGroup toggleGroup = new ToggleGroup();
+            RadioButton radioButtonH = new RadioButton("Horizontal");
+            RadioButton radioButtonV = new RadioButton("Vertical");
+            radioButtonH.setToggleGroup(toggleGroup);
+            radioButtonV.setToggleGroup(toggleGroup);
+            radioButtonH.setSelected(true);
+            radioButtonH.setOnAction(e -> {
+                orientation = Orientation.HORIZONTAL;
+            });
+            radioButtonV.setOnAction(e -> {
+                orientation = Orientation.VERTICAL;
+            });
+
             Button buttonCreateShip1 = new Button("1 deck ship");
             Button buttonCreateShip2 = new Button("2 deck ship");
             Button buttonCreateShip3 = new Button("3 deck ship");
@@ -82,19 +103,20 @@ public class Drawer {
             Button buttonSubmarine = new Button("Submarine");
             Button buttonOK = new Button("OK");
 
-            InputHandler.setButtonChangeGameState(buttonOK, game, this);
+            inputHandler.setButtonChangeGameState(buttonOK, game, this);
 
-            InputHandler.setButtonChangeDrawingState(buttonMine, TypeOfCell.MINE, this);
-            InputHandler.setButtonChangeDrawingState(buttonMinesweeper, TypeOfCell.MINESWEEPER, this);
-            InputHandler.setButtonChangeDrawingState(buttonSubmarine, TypeOfCell.SUBMARINE, this);
-            InputHandler.setButtonChangeDrawingState(buttonCreateShip1, TypeOfCell.SHIP, this);
-            InputHandler.setButtonChangeDrawingState(buttonCreateShip2, TypeOfCell.SHIP, this);
-            InputHandler.setButtonChangeDrawingState(buttonCreateShip3, TypeOfCell.SHIP, this);
-            InputHandler.setButtonChangeDrawingState(buttonCreateShip4, TypeOfCell.SHIP, this);
+            inputHandler.setButtonChangeDrawingState(buttonMine, TypeOfCell.MINE, this);
+            inputHandler.setButtonChangeDrawingState(buttonMinesweeper, TypeOfCell.MINESWEEPER, this);
+            inputHandler.setButtonChangeDrawingState(buttonSubmarine, TypeOfCell.SUBMARINE, this);
+            inputHandler.setButtonChangeDrawingState(buttonCreateShip1, TypeOfCell.SHIP, this, 1);
+            inputHandler.setButtonChangeDrawingState(buttonCreateShip2, TypeOfCell.SHIP, this, 2);
+            inputHandler.setButtonChangeDrawingState(buttonCreateShip3, TypeOfCell.SHIP, this, 3);
+            inputHandler.setButtonChangeDrawingState(buttonCreateShip4, TypeOfCell.SHIP, this, 4);
 
-            InputHandler.setCellAction(game, this);
+            inputHandler.setCellAction(game, this);
 
-            vBoxButtons.getChildren().addAll(buttonCreateShip1, buttonCreateShip2, buttonCreateShip3,
+            vBoxButtons.getChildren().addAll(radioButtonH, radioButtonV,
+                    buttonCreateShip1, buttonCreateShip2, buttonCreateShip3,
                     buttonCreateShip4, buttonMine, buttonMinesweeper, buttonSubmarine, buttonOK);
             hBoxRoot.getChildren().add(vBoxButtons);
             group.getChildren().add(hBoxRoot);
