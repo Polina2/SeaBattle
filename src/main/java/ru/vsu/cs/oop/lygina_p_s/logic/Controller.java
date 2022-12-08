@@ -101,6 +101,7 @@ public class Controller {
         Stage stage = drawer.getStage();
         game.setGameState(state);
         setDrawingState(TypeOfCell.EMPTY_CELL);
+        game.setActionConfirmed(false);
         stage.setScene(drawer.getScene(game));
     }
 

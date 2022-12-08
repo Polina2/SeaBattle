@@ -7,6 +7,15 @@ public class Game {
     private Player player1;
     private Player player2;
     private Controller controller;
+    private boolean actionConfirmed = false;
+
+    public boolean isActionConfirmed() {
+        return actionConfirmed;
+    }
+
+    public void setActionConfirmed(boolean actionConfirmed) {
+        this.actionConfirmed = actionConfirmed;
+    }
 
     public Game(){
 

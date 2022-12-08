@@ -13,8 +13,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         Game game = new Game();
-        Drawer drawer = new Drawer(stage);
         game.run();
+        Drawer drawer = new Drawer(stage, game);
         stage.setScene(drawer.getScene(game));
         stage.show();
     }
