@@ -35,8 +35,4 @@ public class Player {
     public void setCellType(int i, int j, TypeOfCell type){
         getCell(i, j).setType(type);
     }
-
-    public void setCellHit(int i, int j){
-        getCell(i, j).setHit(true);
-    }
 }

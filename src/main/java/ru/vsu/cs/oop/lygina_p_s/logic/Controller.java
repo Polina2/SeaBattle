@@ -102,6 +102,7 @@ public class Controller {
         game.setGameState(state);
         setDrawingState(TypeOfCell.EMPTY_CELL);
         game.setActionConfirmed(false);
+        game.setTurnFinished(false);
         stage.setScene(drawer.getScene(game));
     }
 

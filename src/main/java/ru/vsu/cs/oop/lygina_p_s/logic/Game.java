@@ -8,6 +8,19 @@ public class Game {
     private Player player2;
     private Controller controller;
     private boolean actionConfirmed = false;
+    private boolean turnFinished = false;
+
+    public Controller getController() {
+        return controller;
+    }
+
+    public boolean isTurnFinished() {
+        return turnFinished;
+    }
+
+    public void setTurnFinished(boolean turnFinished) {
+        this.turnFinished = turnFinished;
+    }
 
     public boolean isActionConfirmed() {
         return actionConfirmed;
@@ -26,10 +39,9 @@ public class Game {
         player2 = new Player();
         controller = new Controller();
         gameState = GameState.CREATING_FIELD_1;
-        //update view
     }
 
-    private void turn(int row, int col){
+    public void turn(int row, int col){
         Player victim, attacker;
         if (gameState == GameState.TURN_1) {
             victim = player2;
@@ -43,6 +55,8 @@ public class Game {
 
     private void fire(Player victim, Player attacker, int row, int col){
         Cell cell = victim.getCell(row, col);
+        if (cell.isHit())
+            return;
         cell.setHit(true);
         if (cell.getType() == TypeOfCell.SHIP){
             cell.getShip().decreaseAliveDeckCount();
@@ -58,10 +72,8 @@ public class Game {
             }else if (cell.getType() == TypeOfCell.MINESWEEPER){
                 //mine coordinates
             }
-            if (gameState == GameState.TURN_1)
-                gameState = GameState.TURN_2;
-            else
-                gameState = GameState.TURN_1;
+            turnFinished = true;
+            //change game state
         }
     }
 
