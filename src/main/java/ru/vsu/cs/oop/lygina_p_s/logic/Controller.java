@@ -103,7 +103,7 @@ public class Controller {
         setDrawingState(TypeOfCell.EMPTY_CELL);
         game.setActionConfirmed(false);
         game.setTurnFinished(false);
-        stage.setScene(drawer.getScene(game));
+        stage.setScene(drawer.getScene());
     }
 
     public boolean createComponent(Player player, int i, int j){

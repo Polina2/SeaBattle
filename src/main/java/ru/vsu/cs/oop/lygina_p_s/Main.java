@@ -15,7 +15,7 @@ public class Main extends Application {
         Game game = new Game();
         game.run();
         Drawer drawer = new Drawer(stage, game);
-        stage.setScene(drawer.getScene(game));
+        stage.setScene(drawer.getScene());
         stage.show();
     }
 }

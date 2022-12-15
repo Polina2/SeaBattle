@@ -1,12 +1,13 @@
 package ru.vsu.cs.oop.lygina_p_s;
 
-import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -29,10 +30,10 @@ public class Drawer {
     private FieldView fieldViewVictim1;
     private FieldView fieldViewVictim2;
     private final Stage stage;
-    private final InputHandler inputHandler;
+    private final Game game;
 
     public Drawer(Stage stage, Game game) {
-        inputHandler = new InputHandler(game.getController());
+        this.game = game;
         fieldView1 = new FieldView(game.getPlayer1());
         fieldView2 = new FieldView(game.getPlayer2());
         fieldViewVictim1 = new FieldView(game.getPlayer1());
@@ -60,7 +61,7 @@ public class Drawer {
         return fieldViewVictim2;
     }
 
-    private Scene getCreatingFieldScene(Game game){
+    private Scene getCreatingFieldScene(){
         GameState state = game.getGameState();
         Group group = new Group();
         HBox hBoxRoot = new HBox();
@@ -78,8 +79,12 @@ public class Drawer {
         radioButtonV.setToggleGroup(toggleGroup);
         radioButtonH.setSelected(true);
 
-        inputHandler.setRadioButtonChangeOrientation(radioButtonH, Orientation.HORIZONTAL);
-        inputHandler.setRadioButtonChangeOrientation(radioButtonV, Orientation.VERTICAL);
+        radioButtonH.setOnAction(e -> {
+            game.changeOrientation(Orientation.HORIZONTAL);
+        });
+        radioButtonV.setOnAction(e -> {
+            game.changeOrientation(Orientation.VERTICAL);
+        });
 
         Button buttonCreateShip1 = new Button("1 deck ship");
         Button buttonCreateShip2 = new Button("2 deck ship");
@@ -91,20 +96,32 @@ public class Drawer {
         Button buttonOK = new Button("OK");
 
         buttonOK.setOnAction(e -> {
-            inputHandler.setButtonChangeGameState(buttonOK, game, this);
-
+            game.changeGameStateAction(this);
         });
-        inputHandler.setButtonChangeGameState(buttonOK, game, this);
 
-        inputHandler.setButtonChangeDrawingState(buttonMine, TypeOfCell.MINE, this);
-        inputHandler.setButtonChangeDrawingState(buttonMinesweeper, TypeOfCell.MINESWEEPER, this);
-        inputHandler.setButtonChangeDrawingState(buttonSubmarine, TypeOfCell.SUBMARINE, this);
-        inputHandler.setButtonChangeDrawingState(buttonCreateShip1, TypeOfCell.SHIP, 1);
-        inputHandler.setButtonChangeDrawingState(buttonCreateShip2, TypeOfCell.SHIP, 2);
-        inputHandler.setButtonChangeDrawingState(buttonCreateShip3, TypeOfCell.SHIP, 3);
-        inputHandler.setButtonChangeDrawingState(buttonCreateShip4, TypeOfCell.SHIP, 4);
+        buttonMine.setOnAction(e -> {
+            game.changeDrawingStateAction(TypeOfCell.MINE);
+        });
+        buttonMinesweeper.setOnAction(e -> {
+            game.changeDrawingStateAction(TypeOfCell.MINESWEEPER);
+        });
+        buttonSubmarine.setOnAction(e -> {
+            game.changeDrawingStateAction(TypeOfCell.SUBMARINE);
+        });
+        buttonCreateShip1.setOnAction(e -> {
+            game.changeDrawingStateAction(TypeOfCell.SHIP, 1);
+        });
+        buttonCreateShip2.setOnAction(e -> {
+            game.changeDrawingStateAction(TypeOfCell.SHIP, 2);
+        });
+        buttonCreateShip3.setOnAction(e -> {
+            game.changeDrawingStateAction(TypeOfCell.SHIP, 3);
+        });
+        buttonCreateShip4.setOnAction(e -> {
+            game.changeDrawingStateAction(TypeOfCell.SHIP, 4);
+        });
 
-        inputHandler.setCellAction(game, this);
+        game.setCellAction(this);
 
         vBoxButtons.getChildren().addAll(radioButtonH, radioButtonV,
                 buttonCreateShip1, buttonCreateShip2, buttonCreateShip3,
@@ -114,41 +131,46 @@ public class Drawer {
         return new Scene(group, 800, 600);
     }
 
-    private Scene getConfirmationScene(Game game){
+    private Scene getConfirmationScene(){
         Group group = new Group();
         StackPane stackPane = new StackPane();
         Button button = new Button("Confirm");
-        inputHandler.setButtonConfirmAction(button, game, this);
+        button.setOnAction(e -> {
+            game.confirmAction(this);
+        });
         stackPane.setPrefSize(800, 600);
         stackPane.getChildren().add(button);
         group.getChildren().add(stackPane);
         return new Scene(group, 800, 600);
     }
 
-    private Scene getTurnScene(Game game) {
+    private Scene getTurnScene() {
         Group group = new Group();
         HBox hBox = new HBox();
 
         FieldView fieldViewVictim = (game.getGameState()==TURN_1)?fieldViewVictim2:fieldViewVictim1;
         FieldView fieldViewAttacker = (game.getGameState()==TURN_1)?fieldView1:fieldView2;
         Button buttonOK = new Button("OK");
-        inputHandler.setButtonChangeGameState(buttonOK, game, this);
-        inputHandler.setCellAction(game, this);
+        buttonOK.setOnAction(e -> {
+            game.changeGameStateAction(this);
+        });
+
+        game.setCellAction(this);
 
         hBox.getChildren().addAll(fieldViewAttacker, new Separator(), fieldViewVictim, buttonOK);
         group.getChildren().add(hBox);
         return new Scene(group, 900, 600);
     }
 
-    public Scene getScene(Game game) {
+    public Scene getScene() {
         GameState state = game.getGameState();
         if (state == CREATING_FIELD_1 || state == CREATING_FIELD_2){
-            return getCreatingFieldScene(game);
+            return getCreatingFieldScene();
         } else if (state == TURN_1 || state == TURN_2){
             if (game.isActionConfirmed())
-                return getTurnScene(game);
+                return getTurnScene();
             else
-                return getConfirmationScene(game);
+                return getConfirmationScene();
         }
         return null;
     }
