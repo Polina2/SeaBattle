@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 import ru.vsu.cs.oop.lygina_p_s.Drawer;
 import ru.vsu.cs.oop.lygina_p_s.FieldView;
 
+import java.util.Random;
+
 import static ru.vsu.cs.oop.lygina_p_s.logic.GameState.*;
 
 public class Game {
@@ -75,6 +77,7 @@ public class Game {
         Stage stage = drawer.getStage();
         setGameState(state);
         controller.setDrawingState(TypeOfCell.EMPTY_CELL);
+        controller.setOrientation(Orientation.HORIZONTAL);
         setActionConfirmed(false);
         setTurnFinished(false);
         stage.setScene(drawer.getScene());
@@ -116,8 +119,7 @@ public class Game {
 
     private void setCellTurnAction(){
         FieldView fieldViewVictim = (getGameState()==TURN_1)? drawer.getFieldViewVictim2():drawer.getFieldViewVictim1();
-        FieldView fieldViewAttackingVictim = (getGameState()==TURN_1)? drawer.getFieldView2():drawer.getFieldView1();
-        Player victim = (getGameState()==TURN_1)?player2:player1;
+
         for (int i = 0; i < Game.TABLE_SIZE; i++) {
             for (int j = 0; j < Game.TABLE_SIZE; j++) {
                 Node node = drawer.getNodeFromGridPane(fieldViewVictim, i, j);
@@ -127,14 +129,6 @@ public class Game {
                     if (isTurnFinished())
                         return;
                     turn(finalI, finalJ);
-                    drawer.drawHitCell(
-                            (StackPane) drawer.getNodeFromGridPane(fieldViewVictim, finalI, finalJ),
-                            victim.getCell(finalI, finalJ).getType()
-                    );
-                    drawer.drawHitCell(
-                            (StackPane) drawer.getNodeFromGridPane(fieldViewAttackingVictim, finalI, finalJ),
-                            victim.getCell(finalI, finalJ).getType()
-                    );
                 });
             }
         }
@@ -165,6 +159,18 @@ public class Game {
         if (cell.isHit())
             return;
         cell.setHit(true);
+
+        FieldView fieldViewVictim = (victim == player2)? drawer.getFieldViewVictim2():drawer.getFieldViewVictim1();
+        FieldView fieldViewAttackingVictim = (victim == player2)? drawer.getFieldView2():drawer.getFieldView1();
+        drawer.drawHitCell(
+                (StackPane) drawer.getNodeFromGridPane(fieldViewVictim, row, col),
+                victim.getCell(row, col).getType()
+        );
+        drawer.drawHitCell(
+                (StackPane) drawer.getNodeFromGridPane(fieldViewAttackingVictim, row, col),
+                victim.getCell(row, col).getType()
+        );
+
         if (cell.getType() == TypeOfCell.SHIP){
             cell.getShip().decreaseAliveDeckCount();
             if (!cell.getShip().isAlive())
@@ -175,12 +181,72 @@ public class Game {
             if (cell.getType() == TypeOfCell.SUBMARINE){
                 fire(attacker, victim, row, col);
             } else if (cell.getType() == TypeOfCell.MINE){
-                //ship coordinates
+                FieldView fieldViewAttacker = (attacker == player1)?drawer.getFieldViewVictim1():drawer.getFieldViewVictim2();
+                StackPane pane = getRandomShipCell(attacker, fieldViewAttacker);
+                if (pane != null)
+                    drawer.drawDiscoveredCell(pane, TypeOfCell.SHIP);
             }else if (cell.getType() == TypeOfCell.MINESWEEPER){
-                //mine coordinates
+                FieldView fieldViewAttacker = (attacker == player1)?drawer.getFieldViewVictim1():drawer.getFieldViewVictim2();
+                StackPane pane = getRandomMineCell(attacker, fieldViewAttacker);
+                if (pane != null)
+                    drawer.drawDiscoveredCell(pane, TypeOfCell.MINE);
             }
             turnFinished = true;
         }
+    }
+
+    private StackPane getRandomShipCell(Player player, FieldView fieldView){
+        Random random = new Random();
+        int number = random.nextInt(getShipCellCount(player));
+        for (int i = 0; i < TABLE_SIZE; i++){
+            for (int j = 0; j < TABLE_SIZE; j++){
+                if (player.getCell(i, j).getType() == TypeOfCell.SHIP && !player.getCell(i, j).isHit()){
+                    number--;
+                }
+                if (number == 0){
+                    return (StackPane) drawer.getNodeFromGridPane(fieldView, i, j);
+                }
+            }
+        }
+        return null;
+    }
+
+    private StackPane getRandomMineCell(Player player, FieldView fieldView){
+        Random random = new Random();
+        int number = random.nextInt(getMineCellCount(player));
+        for (int i = 0; i < TABLE_SIZE; i++){
+            for (int j = 0; j < TABLE_SIZE; j++){
+                if (player.getCell(i, j).getType() == TypeOfCell.MINE && !player.getCell(i, j).isHit()){
+                    number--;
+                }
+                if (number == 0){
+                    return (StackPane) drawer.getNodeFromGridPane(fieldView, i, j);
+                }
+            }
+        }
+        return null;
+    }
+
+    private int getShipCellCount(Player player){
+        int count = 0;
+        for (int i = 0; i < TABLE_SIZE; i++){
+            for (int j = 0; j < TABLE_SIZE; j++){
+                if (player.getCell(i, j).getType() == TypeOfCell.SHIP && !player.getCell(i, j).isHit())
+                    count++;
+            }
+        }
+        return count;
+    }
+
+    private int getMineCellCount(Player player){
+        int count = 0;
+        for (int i = 0; i < TABLE_SIZE; i++){
+            for (int j = 0; j < TABLE_SIZE; j++){
+                if (player.getCell(i, j).getType() == TypeOfCell.MINE && !player.getCell(i, j).isHit())
+                    count++;
+            }
+        }
+        return count;
     }
 
     public GameState getGameState() {
@@ -189,14 +255,6 @@ public class Game {
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
-    }
-
-    public Player getPlayer1() {
-        return player1;
-    }
-
-    public Player getPlayer2() {
-        return player2;
     }
 
     public void decreaseAliveShipsCount(Player player){

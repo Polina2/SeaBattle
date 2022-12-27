@@ -201,6 +201,14 @@ public class Drawer {
         }
     }
 
+    public void drawDiscoveredCell(StackPane pane, TypeOfCell type){
+        if (type == TypeOfCell.MINE){
+            drawMine(pane, Color.LIGHTGREY);
+        } else {
+            drawShip(pane, Color.LIGHTGREY);
+        }
+    }
+
     private void drawEmptyCell(StackPane pane){
         Rectangle rectangle = (Rectangle) pane.getChildren().get(0);
         rectangle.setFill(Color.GREY);
