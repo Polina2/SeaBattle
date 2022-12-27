@@ -2,7 +2,7 @@ package ru.vsu.cs.oop.lygina_p_s.logic;
 
 public class Player {
     private Cell[][] cells = new Cell[Game.TABLE_SIZE][Game.TABLE_SIZE];
-    private int aliveShipsCount = 10;
+    private int aliveShipsCount = 0;
 
     public Player() {
         for (int i = 0; i < Game.TABLE_SIZE; i++){

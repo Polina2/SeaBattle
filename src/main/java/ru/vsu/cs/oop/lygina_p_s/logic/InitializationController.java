@@ -1,9 +1,6 @@
 package ru.vsu.cs.oop.lygina_p_s.logic;
 
-import javafx.stage.Stage;
-import ru.vsu.cs.oop.lygina_p_s.Drawer;
-
-public class Controller {
+public class InitializationController {
     private TypeOfCell drawingState = TypeOfCell.EMPTY_CELL;
     private int deckCount = 1;
     private Orientation orientation = Orientation.HORIZONTAL;
@@ -30,10 +27,6 @@ public class Controller {
 
     public void setDeckCount(int deckCount) {
         this.deckCount = deckCount;
-    }
-
-    public void decreaseAliveShipsCount(Player player){
-        player.setAliveShipsCount(player.getAliveShipsCount() - 1);
     }
 
     private boolean isCellEmpty(Player player, int i, int j){
@@ -94,16 +87,8 @@ public class Controller {
             int col = (ship.getOrientation() == Orientation.VERTICAL)?ind:j;
             player.setCell(row, col, new Cell(ship));
         }
+        player.setAliveShipsCount(player.getAliveShipsCount()+1);
         return true;
-    }
-
-    public void changeGameState(Game game, Drawer drawer, GameState state){
-        Stage stage = drawer.getStage();
-        game.setGameState(state);
-        setDrawingState(TypeOfCell.EMPTY_CELL);
-        game.setActionConfirmed(false);
-        game.setTurnFinished(false);
-        stage.setScene(drawer.getScene());
     }
 
     public boolean createComponent(Player player, int i, int j){

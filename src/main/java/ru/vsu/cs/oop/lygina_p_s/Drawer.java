@@ -16,6 +16,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ru.vsu.cs.oop.lygina_p_s.logic.Game;
 import ru.vsu.cs.oop.lygina_p_s.logic.GameState;
@@ -171,8 +172,19 @@ public class Drawer {
                 return getTurnScene();
             else
                 return getConfirmationScene();
+        } else {
+            return getEndScene();
         }
-        return null;
+    }
+
+    private Scene getEndScene(){
+        Group group = new Group();
+        StackPane stackPane = new StackPane();
+        Text text = new Text("Game over");
+        stackPane.setPrefSize(800, 600);
+        stackPane.getChildren().add(text);
+        group.getChildren().add(stackPane);
+        return new Scene(group, 800, 600);
     }
 
     public void drawHitCell(StackPane pane, TypeOfCell drawingState){

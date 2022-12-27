@@ -3,6 +3,7 @@ package ru.vsu.cs.oop.lygina_p_s.logic;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import ru.vsu.cs.oop.lygina_p_s.Drawer;
 import ru.vsu.cs.oop.lygina_p_s.FieldView;
 
@@ -14,7 +15,7 @@ public class Game {
     private GameState gameState;
     private Player player1;
     private Player player2;
-    private Controller controller;
+    private InitializationController controller;
     private boolean actionConfirmed = false;
     private boolean turnFinished = false;
 
@@ -41,7 +42,7 @@ public class Game {
     public void run(){
         player1 = new Player();
         player2 = new Player();
-        controller = new Controller();
+        controller = new InitializationController();
         gameState = GameState.CREATING_FIELD_1;
     }
 
@@ -56,11 +57,22 @@ public class Game {
 
     public void changeGameStateAction(Drawer drawer){
         if (getGameState() == CREATING_FIELD_1)
-            controller.changeGameState(this, drawer, CREATING_FIELD_2);
+            changeGameState(drawer, CREATING_FIELD_2);
         else if (getGameState() == TURN_1 && isTurnFinished())
-            controller.changeGameState(this, drawer, TURN_2);
+            changeGameState(drawer, TURN_2);
         else if (getGameState()==CREATING_FIELD_2 || (getGameState()==TURN_2 && isTurnFinished()))
-            controller.changeGameState(this, drawer, TURN_1);
+            changeGameState(drawer, TURN_1);
+        else if (getGameState()==END)
+            changeGameState(drawer, END);
+    }
+
+    public void changeGameState(Drawer drawer, GameState state){
+        Stage stage = drawer.getStage();
+        setGameState(state);
+        controller.setDrawingState(TypeOfCell.EMPTY_CELL);
+        setActionConfirmed(false);
+        setTurnFinished(false);
+        stage.setScene(drawer.getScene());
     }
 
     public void changeOrientation(Orientation orientation){
@@ -71,7 +83,7 @@ public class Game {
         setActionConfirmed(true);
         drawer.getStage().setScene(drawer.getScene());
     }
-    //maybe i'll correct it
+
     private void setCellCreatingFieldAction(Drawer drawer){
         FieldView fieldView = (getGameState() == CREATING_FIELD_1)?drawer.getFieldView1():drawer.getFieldView2();
         for (int i = 0; i < Game.TABLE_SIZE; i++) {
@@ -97,10 +109,11 @@ public class Game {
     }
 
     private void setCellTurnAction(Drawer drawer){
-        FieldView fieldView = (getGameState()==TURN_1)? drawer.getFieldViewVictim2():drawer.getFieldViewVictim1();
+        FieldView fieldViewVictim = (getGameState()==TURN_1)? drawer.getFieldViewVictim2():drawer.getFieldViewVictim1();
+        FieldView fieldViewAttackingVictim = (getGameState()==TURN_1)? drawer.getFieldView2():drawer.getFieldView1();
         for (int i = 0; i < Game.TABLE_SIZE; i++) {
             for (int j = 0; j < Game.TABLE_SIZE; j++) {
-                Node node = getNodeFromGridPane(fieldView, i, j);
+                Node node = getNodeFromGridPane(fieldViewVictim, i, j);
                 int finalI = i;
                 int finalJ = j;
                 node.setOnMouseClicked(e -> {
@@ -108,8 +121,12 @@ public class Game {
                         return;
                     turn(finalI, finalJ);
                     drawer.drawHitCell(
-                            (StackPane) getNodeFromGridPane(fieldView, finalI, finalJ),
-                            fieldView.getPlayer().getCell(finalI, finalJ).getType()
+                            (StackPane) getNodeFromGridPane(fieldViewVictim, finalI, finalJ),
+                            fieldViewVictim.getPlayer().getCell(finalI, finalJ).getType()
+                    );
+                    drawer.drawHitCell(
+                            (StackPane) getNodeFromGridPane(fieldViewAttackingVictim, finalI, finalJ),
+                            fieldViewAttackingVictim.getPlayer().getCell(finalI, finalJ).getType()
                     );
                 });
             }
@@ -153,7 +170,7 @@ public class Game {
         if (cell.getType() == TypeOfCell.SHIP){
             cell.getShip().decreaseAliveDeckCount();
             if (!cell.getShip().isAlive())
-                controller.decreaseAliveShipsCount(victim);
+                decreaseAliveShipsCount(victim);
             if (victim.getAliveShipsCount() == 0)
                 gameState = GameState.END;
         } else {
@@ -182,5 +199,9 @@ public class Game {
 
     public Player getPlayer2() {
         return player2;
+    }
+
+    public void decreaseAliveShipsCount(Player player){
+        player.setAliveShipsCount(player.getAliveShipsCount() - 1);
     }
 }
