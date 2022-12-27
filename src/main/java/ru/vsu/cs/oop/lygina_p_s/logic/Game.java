@@ -91,13 +91,14 @@ public class Game {
 
     private void setCellCreatingFieldAction(){
         FieldView fieldView = (getGameState() == CREATING_FIELD_1)?drawer.getFieldView1():drawer.getFieldView2();
+        Player player = (getGameState() == CREATING_FIELD_1)?player1:player2;
         for (int i = 0; i < Game.TABLE_SIZE; i++) {
             for (int j = 0; j < Game.TABLE_SIZE; j++) {
                 Node node = drawer.getNodeFromGridPane(fieldView, i, j);
                 int finalI = i;
                 int finalJ = j;
                 node.setOnMouseClicked(e -> {
-                    if(controller.createComponent(fieldView.getPlayer(), finalI, finalJ)) {
+                    if(controller.createComponent(player, finalI, finalJ)) {
                         if (controller.getDrawingState() == TypeOfCell.SHIP){
                             int start = (controller.getOrientation() == Orientation.VERTICAL)?finalJ:finalI;
                             for (int ind = start; ind < start + controller.getDeckCount(); ind++){
@@ -116,6 +117,7 @@ public class Game {
     private void setCellTurnAction(){
         FieldView fieldViewVictim = (getGameState()==TURN_1)? drawer.getFieldViewVictim2():drawer.getFieldViewVictim1();
         FieldView fieldViewAttackingVictim = (getGameState()==TURN_1)? drawer.getFieldView2():drawer.getFieldView1();
+        Player victim = (getGameState()==TURN_1)?player2:player1;
         for (int i = 0; i < Game.TABLE_SIZE; i++) {
             for (int j = 0; j < Game.TABLE_SIZE; j++) {
                 Node node = drawer.getNodeFromGridPane(fieldViewVictim, i, j);
@@ -127,11 +129,11 @@ public class Game {
                     turn(finalI, finalJ);
                     drawer.drawHitCell(
                             (StackPane) drawer.getNodeFromGridPane(fieldViewVictim, finalI, finalJ),
-                            fieldViewVictim.getPlayer().getCell(finalI, finalJ).getType()
+                            victim.getCell(finalI, finalJ).getType()
                     );
                     drawer.drawHitCell(
                             (StackPane) drawer.getNodeFromGridPane(fieldViewAttackingVictim, finalI, finalJ),
-                            fieldViewAttackingVictim.getPlayer().getCell(finalI, finalJ).getType()
+                            victim.getCell(finalI, finalJ).getType()
                     );
                 });
             }

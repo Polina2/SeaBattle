@@ -35,10 +35,10 @@ public class Drawer {
 
     public Drawer(Stage stage, Game game) {
         this.game = game;
-        fieldView1 = new FieldView(game.getPlayer1());
-        fieldView2 = new FieldView(game.getPlayer2());
-        fieldViewVictim1 = new FieldView(game.getPlayer1());
-        fieldViewVictim2 = new FieldView(game.getPlayer2());
+        fieldView1 = new FieldView();
+        fieldView2 = new FieldView();
+        fieldViewVictim1 = new FieldView();
+        fieldViewVictim2 = new FieldView();
         this.stage = stage;
     }
 
