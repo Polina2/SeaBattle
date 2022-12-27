@@ -11,7 +11,7 @@ public class FieldView extends GridPane {
         this.player = player;
         for (int i = 0; i < Game.TABLE_SIZE; i++){
             for (int j = 0; j < Game.TABLE_SIZE; j++){
-                CellView cellView = new CellView(player.getCell(i, j));
+                CellView cellView = new CellView();
                 this.add(cellView, i, j);
             }
         }

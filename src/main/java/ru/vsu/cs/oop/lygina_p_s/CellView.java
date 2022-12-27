@@ -9,10 +9,8 @@ import ru.vsu.cs.oop.lygina_p_s.logic.Game;
 
 public class CellView extends StackPane {
     public static final int SIZE = 400 / Game.TABLE_SIZE;
-    private final Cell cell;
 
-    public CellView(Cell cell) {
-        this.cell = cell;
+    public CellView() {
         Rectangle border = new Rectangle(SIZE, SIZE);
         border.setFill(null);
         border.setStroke(Color.BLACK);

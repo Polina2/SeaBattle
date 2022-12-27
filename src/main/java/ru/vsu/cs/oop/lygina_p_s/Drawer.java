@@ -97,7 +97,7 @@ public class Drawer {
         Button buttonOK = new Button("OK");
 
         buttonOK.setOnAction(e -> {
-            game.changeGameStateAction(this);
+            game.changeGameStateAction();
         });
 
         buttonMine.setOnAction(e -> {
@@ -122,7 +122,7 @@ public class Drawer {
             game.changeDrawingStateAction(TypeOfCell.SHIP, 4);
         });
 
-        game.setCellAction(this);
+        game.setCellAction();
 
         vBoxButtons.getChildren().addAll(radioButtonH, radioButtonV,
                 buttonCreateShip1, buttonCreateShip2, buttonCreateShip3,
@@ -137,7 +137,7 @@ public class Drawer {
         StackPane stackPane = new StackPane();
         Button button = new Button("Confirm");
         button.setOnAction(e -> {
-            game.confirmAction(this);
+            game.confirmAction();
         });
         stackPane.setPrefSize(800, 600);
         stackPane.getChildren().add(button);
@@ -153,10 +153,10 @@ public class Drawer {
         FieldView fieldViewAttacker = (game.getGameState()==TURN_1)?fieldView1:fieldView2;
         Button buttonOK = new Button("OK");
         buttonOK.setOnAction(e -> {
-            game.changeGameStateAction(this);
+            game.changeGameStateAction();
         });
 
-        game.setCellAction(this);
+        game.setCellAction();
 
         hBox.getChildren().addAll(fieldViewAttacker, new Separator(), fieldViewVictim, buttonOK);
         group.getChildren().add(hBox);
@@ -258,5 +258,14 @@ public class Drawer {
         } else if (drawingState == TypeOfCell.SUBMARINE){
             drawSubmarine(pane, Color.BLACK);
         }
+    }
+
+    public Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+        for (Node node : gridPane.getChildren()) {
+            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+                return node;
+            }
+        }
+        return null;
     }
 }

@@ -16,6 +16,7 @@ public class Game {
     private Player player1;
     private Player player2;
     private InitializationController controller;
+    private Drawer drawer;
     private boolean actionConfirmed = false;
     private boolean turnFinished = false;
 
@@ -39,6 +40,10 @@ public class Game {
 
     }
 
+    public void setDrawer(Drawer drawer) {
+        this.drawer = drawer;
+    }
+
     public void run(){
         player1 = new Player();
         player2 = new Player();
@@ -55,18 +60,18 @@ public class Game {
         controller.setDeckCount(deckCount);
     }
 
-    public void changeGameStateAction(Drawer drawer){
+    public void changeGameStateAction(){
         if (getGameState() == CREATING_FIELD_1)
-            changeGameState(drawer, CREATING_FIELD_2);
+            changeGameState(CREATING_FIELD_2);
         else if (getGameState() == TURN_1 && isTurnFinished())
-            changeGameState(drawer, TURN_2);
+            changeGameState(TURN_2);
         else if (getGameState()==CREATING_FIELD_2 || (getGameState()==TURN_2 && isTurnFinished()))
-            changeGameState(drawer, TURN_1);
+            changeGameState(TURN_1);
         else if (getGameState()==END)
-            changeGameState(drawer, END);
+            changeGameState(END);
     }
 
-    public void changeGameState(Drawer drawer, GameState state){
+    public void changeGameState(GameState state){
         Stage stage = drawer.getStage();
         setGameState(state);
         controller.setDrawingState(TypeOfCell.EMPTY_CELL);
@@ -79,16 +84,16 @@ public class Game {
         controller.setOrientation(orientation);
     }
 
-    public void confirmAction(Drawer drawer){
+    public void confirmAction(){
         setActionConfirmed(true);
         drawer.getStage().setScene(drawer.getScene());
     }
 
-    private void setCellCreatingFieldAction(Drawer drawer){
+    private void setCellCreatingFieldAction(){
         FieldView fieldView = (getGameState() == CREATING_FIELD_1)?drawer.getFieldView1():drawer.getFieldView2();
         for (int i = 0; i < Game.TABLE_SIZE; i++) {
             for (int j = 0; j < Game.TABLE_SIZE; j++) {
-                Node node = getNodeFromGridPane(fieldView, i, j);
+                Node node = drawer.getNodeFromGridPane(fieldView, i, j);
                 int finalI = i;
                 int finalJ = j;
                 node.setOnMouseClicked(e -> {
@@ -98,7 +103,7 @@ public class Game {
                             for (int ind = start; ind < start + controller.getDeckCount(); ind++){
                                 int row = (controller.getOrientation() == Orientation.VERTICAL)?finalI:ind;
                                 int col = (controller.getOrientation() == Orientation.VERTICAL)?ind:finalJ;
-                                drawer.drawComponent((StackPane) getNodeFromGridPane(fieldView, row, col), controller.getDrawingState());
+                                drawer.drawComponent((StackPane) drawer.getNodeFromGridPane(fieldView, row, col), controller.getDrawingState());
                             }
                         } else
                             drawer.drawComponent((StackPane) node, controller.getDrawingState());
@@ -108,12 +113,12 @@ public class Game {
         }
     }
 
-    private void setCellTurnAction(Drawer drawer){
+    private void setCellTurnAction(){
         FieldView fieldViewVictim = (getGameState()==TURN_1)? drawer.getFieldViewVictim2():drawer.getFieldViewVictim1();
         FieldView fieldViewAttackingVictim = (getGameState()==TURN_1)? drawer.getFieldView2():drawer.getFieldView1();
         for (int i = 0; i < Game.TABLE_SIZE; i++) {
             for (int j = 0; j < Game.TABLE_SIZE; j++) {
-                Node node = getNodeFromGridPane(fieldViewVictim, i, j);
+                Node node = drawer.getNodeFromGridPane(fieldViewVictim, i, j);
                 int finalI = i;
                 int finalJ = j;
                 node.setOnMouseClicked(e -> {
@@ -121,11 +126,11 @@ public class Game {
                         return;
                     turn(finalI, finalJ);
                     drawer.drawHitCell(
-                            (StackPane) getNodeFromGridPane(fieldViewVictim, finalI, finalJ),
+                            (StackPane) drawer.getNodeFromGridPane(fieldViewVictim, finalI, finalJ),
                             fieldViewVictim.getPlayer().getCell(finalI, finalJ).getType()
                     );
                     drawer.drawHitCell(
-                            (StackPane) getNodeFromGridPane(fieldViewAttackingVictim, finalI, finalJ),
+                            (StackPane) drawer.getNodeFromGridPane(fieldViewAttackingVictim, finalI, finalJ),
                             fieldViewAttackingVictim.getPlayer().getCell(finalI, finalJ).getType()
                     );
                 });
@@ -133,21 +138,12 @@ public class Game {
         }
     }
 
-    public void setCellAction(Drawer drawer){
+    public void setCellAction(){
         if (getGameState() == CREATING_FIELD_1 || getGameState() == CREATING_FIELD_2) {
-            setCellCreatingFieldAction(drawer);
+            setCellCreatingFieldAction();
         } else if (getGameState() == TURN_1 || getGameState() == TURN_2){
-            setCellTurnAction(drawer);
+            setCellTurnAction();
         }
-    }
-
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-        for (Node node : gridPane.getChildren()) {
-            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-                return node;
-            }
-        }
-        return null;
     }
 
     public void turn(int row, int col){
