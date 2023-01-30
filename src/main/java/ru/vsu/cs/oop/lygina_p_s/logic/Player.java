@@ -7,7 +7,7 @@ public class Player {
     public Player() {
         for (int i = 0; i < Game.TABLE_SIZE; i++){
             for (int j = 0; j < Game.TABLE_SIZE; j++) {
-                cells[i][j] = new Cell();
+                cells[i][j] = new Cell(i, j);
             }
         }
     }

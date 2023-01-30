@@ -85,7 +85,7 @@ public class InitializationController {
         for (int ind = start; ind < start + ship.getDeckCount(); ind++){
             int row = (ship.getOrientation() == Orientation.VERTICAL)?i:ind;
             int col = (ship.getOrientation() == Orientation.VERTICAL)?ind:j;
-            player.setCell(row, col, new Cell(ship));
+            player.setCell(row, col, new Cell(ship, row, col));
         }
         player.setAliveShipsCount(player.getAliveShipsCount()+1);
         return true;

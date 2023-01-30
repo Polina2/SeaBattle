@@ -18,10 +18,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ru.vsu.cs.oop.lygina_p_s.logic.Game;
-import ru.vsu.cs.oop.lygina_p_s.logic.GameState;
-import ru.vsu.cs.oop.lygina_p_s.logic.Orientation;
-import ru.vsu.cs.oop.lygina_p_s.logic.TypeOfCell;
+import ru.vsu.cs.oop.lygina_p_s.logic.*;
 
 import static ru.vsu.cs.oop.lygina_p_s.logic.GameState.*;
 
@@ -163,7 +160,7 @@ public class Drawer {
         return new Scene(group, 900, 600);
     }
 
-    public Scene getScene() {
+    private Scene getScene() {
         GameState state = game.getGameState();
         if (state == CREATING_FIELD_1 || state == CREATING_FIELD_2){
             return getCreatingFieldScene();
@@ -177,6 +174,10 @@ public class Drawer {
         }
     }
 
+    public void updateScene(){
+        stage.setScene(getScene());
+    }
+
     private Scene getEndScene(){
         Group group = new Group();
         StackPane stackPane = new StackPane();
@@ -187,7 +188,37 @@ public class Drawer {
         return new Scene(group, 800, 600);
     }
 
-    public void drawHitCell(StackPane pane, TypeOfCell drawingState){
+    public void setCellTurnAction(){
+        FieldView fieldViewVictim = (game.getGameState()==TURN_1)?getFieldViewVictim2():getFieldViewVictim1();
+
+        for (int i = 0; i < Game.TABLE_SIZE; i++) {
+            for (int j = 0; j < Game.TABLE_SIZE; j++) {
+                Node node = getNodeFromGridPane(fieldViewVictim, i, j);
+                int finalI = i;
+                int finalJ = j;
+                node.setOnMouseClicked(e -> {
+                    game.cellTurnAction(finalI, finalJ);
+                });
+            }
+        }
+    }
+
+    public void setCellCreatingFieldAction(){
+        FieldView fieldView = (game.getGameState() == CREATING_FIELD_1)?getFieldView1():getFieldView2();
+        for (int i = 0; i < Game.TABLE_SIZE; i++) {
+            for (int j = 0; j < Game.TABLE_SIZE; j++) {
+                Node node = getNodeFromGridPane(fieldView, i, j);
+                int finalI = i;
+                int finalJ = j;
+                node.setOnMouseClicked(e -> {
+                    game.cellCreatingFieldAction(finalI, finalJ);
+                });
+            }
+        }
+    }
+
+    public void drawHitCell(FieldView fieldView, int row, int col, TypeOfCell drawingState){
+        StackPane pane = (StackPane) getNodeFromGridPane(fieldView, row, col);
         if (drawingState == TypeOfCell.MINE){
             drawMine(pane, Color.RED);
         } else if (drawingState == TypeOfCell.SHIP){
@@ -201,7 +232,8 @@ public class Drawer {
         }
     }
 
-    public void drawDiscoveredCell(StackPane pane, TypeOfCell type){
+    public void drawDiscoveredCell(FieldView fieldView, int row, int col, TypeOfCell type){
+        StackPane pane = (StackPane) getNodeFromGridPane(fieldView, row, col);
         if (type == TypeOfCell.MINE){
             drawMine(pane, Color.LIGHTGREY);
         } else {
@@ -256,7 +288,8 @@ public class Drawer {
         pane.getChildren().add(polygon);
     }
 
-    public void drawComponent(StackPane pane, TypeOfCell drawingState){
+    public void drawComponent(FieldView fieldView, int row, int col, TypeOfCell drawingState){
+        StackPane pane = (StackPane) getNodeFromGridPane(fieldView, row, col);
         if (drawingState == TypeOfCell.MINE){
             drawMine(pane, Color.BLACK);
         } else if (drawingState == TypeOfCell.SHIP){
@@ -268,7 +301,7 @@ public class Drawer {
         }
     }
 
-    public Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
                 return node;
